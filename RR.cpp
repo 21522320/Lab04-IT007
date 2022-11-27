@@ -1,3 +1,10 @@
+/* *
+ * UIT
+ * Team: WINter
+ * Course ID: IT007.N11.2
+ * File: SJF.c
+ * */
+
 #include <iostream>
 #include <algorithm>
 using namespace std;
