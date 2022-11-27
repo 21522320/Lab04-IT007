@@ -1,6 +1,5 @@
 /* *
  * UIT
- * Name: Bui Huynh Kim Uyen
  * Team: WINter
  * Course ID: IT007.N11.2
  * File: SJF.c
