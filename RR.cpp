@@ -147,11 +147,24 @@ int main()
         running = ready[0];
         delete_head(ready, n_ready);
     }
-    
-    cout << "Name\tResponse Waiting TAT Finish\n";
-    for (i = 0; i < n; i++)
-    {
-        terminated[i].output();
-    }
+	// Output
+	float average_response = 0;
+	float average_waiting = 0;
+	float average_turnaround = 0;
+	
+	cout << "Name\tResponse Waiting TAT Finish\n";
+	for (i = 0; i < n; i++) {
+		terminated[i].output();
+		average_response += terminated[i].response;
+		average_waiting += terminated[i].waiting;
+		average_turnaround += terminated[i].turnaround;
+	}
+	average_response /= n_terminated;
+	average_waiting /= n_terminated;
+	average_turnaround /= n_terminated;
+
+	cout << "\nAverage response time: " << average_response << endl;
+	cout << "Average waiting time: " << average_waiting << endl;
+	cout << "Average turnaround time: " << average_turnaround << endl;
     return 0;
 }
