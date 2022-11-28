@@ -28,8 +28,8 @@ typedef struct Process
     }
     void output()
     {
-        cout << name << ' ' << response << ' ' << waiting << ' ' << turnaround << endl;
-    }
+        cout << name << '\t' << response << "\t  " << waiting << "\t  " << turnaround << '\t' << finish << endl;
+	}
 } pro;
 
 bool CompareArrival(const pro &x, const pro &y)
@@ -147,7 +147,8 @@ int main()
         running = ready[0];
         delete_head(ready, n_ready);
     }
-
+    
+    cout << "Name\tResponse Waiting TAT Finish\n";
     for (i = 0; i < n; i++)
     {
         terminated[i].output();
