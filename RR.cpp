@@ -151,7 +151,7 @@ int main()
 	float average_response = 0;
 	float average_waiting = 0;
 	float average_turnaround = 0;
-	
+
 	cout << "Name\tResponse Waiting TAT Finish\n";
 	for (i = 0; i < n; i++) {
 		terminated[i].output();
