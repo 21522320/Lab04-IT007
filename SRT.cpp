@@ -70,7 +70,7 @@ int main()
 	cin >> n;
 
 	pro *process = new pro[n];
-	int i, j;
+	int i;
 	for (i = 0; i < n; i++)
 	{
 		process[i].input();
@@ -92,13 +92,14 @@ int main()
 	pro *terminated = new pro[n];
 
 	pro proc;
-
+	
+	// Run processes
 	add_tail(ready, neww[0], n_ready);
 	delete_head(neww, n_neww);
 
 	running = ready[0];
 	delete_head(ready, n_ready);
-
+	
 	float current_time = running.arrival, estimated_finish;
 	int flag_swap;
 
@@ -146,13 +147,6 @@ int main()
 			running.waiting = running.turnaround - running.burst;
 			current_time = running.finish;
 
-			// add_tail(ready, running, n_ready);
-			// sort(ready, ready + n_ready, CompareRemaining);
-			// if (ready[0].remaining == 0)
-			// {
-			// 	add_tail(terminated, ready[0], n_terminated);
-			// 	delete_head(ready, n_ready);
-			// }
 			add_tail(terminated, running, n_terminated);
 
 			if (n_ready == 0)
@@ -167,10 +161,32 @@ int main()
 		}
 	}
 	
+	// Calculate average values
+	float average_response = 0;
+	for (i = 0; i < n_terminated; i++)
+		average_response += terminated[i].response;
+	average_response /= n_terminated;
+
+	float average_waiting = 0;
+	for (i = 0; i < n_terminated; i++)
+		average_waiting += terminated[i].waiting;
+	average_waiting /= n_terminated;
+
+	float average_turnaround = 0;
+	for (i = 0; i < n_terminated; i++)
+		average_turnaround += terminated[i].turnaround;
+	average_turnaround /= n_terminated;
+	
+	// Output
 	cout << "Name\tResponse Waiting TAT Finish\n";
 	for (i = 0; i < n; i++)
 	{
 		terminated[i].output();
 	}
+	
+	cout << "\nAverage response time: " << average_response << endl;
+	cout << "Average waiting time: " << average_waiting << endl;
+	cout << "Average turnaround time: " << average_turnaround << endl;
+	
 	return 0;
 }
