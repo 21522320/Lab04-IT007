@@ -49,11 +49,15 @@ void main()
 
     // input
     printf("Enter the number of processes: ");
+    fflush(stdout);
     scanf("%d", &n);
+    
     Process temp;
+    fflush(stdout);
     for (i = 0; i < n; i++)
     {
         printf("Enter the Process Name, Arrival Time, Burst Time: ");
+        fflush(stdout);
         scanf("%d%d%d", &temp.pn, &temp.arr, &temp.bur);
         // append(New, temp)
         New.top++;
