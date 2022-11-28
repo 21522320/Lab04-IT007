@@ -30,7 +30,7 @@ typedef struct Process
 	}
 	void output()
 	{
-		cout << name << ' ' << response << ' ' << waiting << ' ' << turnaround << endl;
+		cout << name << '\t' << response << "\t  " << waiting << "\t  " << turnaround << '\t' << finish << endl;
 	}
 } pro;
 
@@ -166,7 +166,8 @@ int main()
 			delete_head(ready, n_ready);
 		}
 	}
-
+	
+	cout << "Name\tResponse Waiting TAT Finish\n";
 	for (i = 0; i < n; i++)
 	{
 		terminated[i].output();
