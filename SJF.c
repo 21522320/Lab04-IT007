@@ -89,13 +89,6 @@ void main()
         // sorting current Ready by burst time with quick sort algo
         qsort((void *)Ready.s, Ready.top + 1, sizeof(Process), comp_burst);
         
-        printf("\nafter sort READY QUEUE AT i = %d\nPName \tArrtime \tBurtime Start \tTAT \tFinish\n",i);
-        for (int i = 0; i < n; i++)
-        {
-            printf("%d\t%6d\t\t%6d\t%6d\t%6d\t%6d\n", Ready.s[i].pn, Ready.s[i].arr,
-                Ready.s[i].bur, Ready.s[i].start, Ready.s[i].tat, Ready.s[i].fin);
-        }
-        
         // calculating
         if (Term.top == -1)
         {
@@ -133,14 +126,6 @@ void main()
             Ready.s[Ready.top] = New.s[j];
             New.top--;
             j++;
-        }
-
-        // ready queue
-        printf("\nREADY QUEUE AT i = %d\nPName \tArrtime \tBurtime Start \tTAT \tFinish\n",i);
-        for (int i = 0; i < n; i++)
-        {
-            printf("%d\t%6d\t\t%6d\t%6d\t%6d\t%6d\n", Ready.s[i].pn, Ready.s[i].arr,
-                Ready.s[i].bur, Ready.s[i].start, Ready.s[i].tat, Ready.s[i].fin);
         }
     }
 
