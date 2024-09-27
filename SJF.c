@@ -5,29 +5,30 @@
  * File: SJF.c
  * */
 
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define MAX 10
 
 struct Process
 {
-	int pn; // process name
-	int arr; // arrival time
-        int bur; // burst time
-        int start; // start time
-       	int fin; // finish time
-       	int tat; // turnaround time 
-       	int wt; // waiting time
-	int rt;
+    int pn;    // process name
+    int arr;   // arrival time
+    int bur;   // burst time
+    int start; // start time
+    int fin;   // finish time
+    int tat;   // turnaround time
+    int wt;    // waiting time
+    int rt;     // response time
+
+    int order;
 };
 typedef struct Process Process;
 
-
 struct PStack
 {
-	Process s[MAX];
-	int top;
+    Process s[MAX];
+    int top;
 };
 typedef struct PStack PStack;
 
@@ -36,135 +37,132 @@ PStack New, Ready, Term; // create 3 queue, corresponding to new queue, ready qu
 int comp_arrival(const void *p, const void *q);
 int comp_burst(const void *p, const void *q);
 
-void main(){
-	// initialize queue
-	New.top = -1;
-	Ready.top = -1;
-	Term.top = -1;
-	Process Done_Process; 
-	Done_Process.bur = 0;
+void main()
+{
+    // initialize queue
+    New.top = -1;
+    Ready.top = -1;
+    Term.top = -1;
 
-	int i, n;
-	int totwt = 0, tottat = 0; // total waiting time, total turnaround time
-	
-	// input
-	printf("Enter the number of processes: ");
-	scanf("%d", &n);	
-	Process temp;
-	for (i = 0; i < n; i++)
-	{
-		printf("Enter the Process Name, Arrival Time, Burst Time: ");
-		scanf("%d%d%d", &temp.pn, &temp.arr, &temp.bur);
-		// append(New, temp)
-		New.top++;
-		New.s[i] = temp;
-	}
-	
-	// sorting New by arrival time with quick sort algo
-	qsort((void*)New.s, n, sizeof(Process), comp_arrival);
-	
-	int curr_arr_time = 0;
-	i = 0;
-	int j = 0;
+    int i, n;
+    int totwt = 0, tottat = 0; // total waiting time, total turnaround time
 
-	
-	for(i = 0; i < n; i++)
-	{
-		curr_arr_time = New.s[i].arr;
+    // input
+    printf("Enter the number of processes: ");
+    fflush(stdout);
+    scanf("%d", &n);
+    
+    Process temp;
+    fflush(stdout);
+    for (i = 0; i < n; i++)
+    {
+        printf("Enter the Process Name, Arrival Time, Burst Time: ");
+        fflush(stdout);
+        scanf("%d%d%d", &temp.pn, &temp.arr, &temp.bur);
+        // append(New, temp)
+        New.top++;
+        New.s[i] = temp;
+        New.s[i].order = i;
+    }
 
-		// add to Ready queue all processes that arrive at the same time
-		while(j < n && curr_arr_time == New.s[j].arr)
-		{
-			// append(Ready, New.s[j])
-			Ready.top++;
-			Ready.s[Ready.top] = New.s[j];
-			j++;
-		}
-		
+    // sorting New by arrival time with quick sort algo
+    qsort((void *)New.s, n, sizeof(Process), comp_arrival);
+    // update order to stablize the order  
+    for (i = 0; i < n; i++)
+        New.s[i].order = i;
 
-		// sorting current Ready by burst time with quick sort algo
-		qsort((void*)Ready.s, Ready.top + 1, sizeof(Process), comp_burst);
+    int curr_arr_time = 0;
+    i = 0;
+    int j = 0;
 
-		// calculating
-		if (Term.top == -1)	
-		{
-			Ready.s[Ready.top].start = Ready.s[Ready.top].arr;
-		}	
-		else
-		{
-			if (Ready.s[Ready.top].arr < Term.s[Term.top].fin)
-			{
-				Ready.s[Ready.top].start = Term.s[Term.top].fin;
-			}
-			else
-			{
-				Ready.s[Ready.top].start = Ready.s[Ready.top].arr;
-			}
-		}
-		Ready.s[Ready.top].fin = Ready.s[Ready.top].start + Ready.s[Ready.top].bur;
-		Ready.s[Ready.top].tat = Ready.s[Ready.top].fin - Ready.s[Ready.top].arr;
-		Ready.s[Ready.top].wt = Ready.s[Ready.top].tat - Ready.s[Ready.top].bur;
-		Ready.s[Ready.top].rt = Ready.s[Ready.top].wt;
-		
+    for (i = 0; i < n; i++)
+    {
+        curr_arr_time = New.s[i].arr;
 
-		// append to Term queue
-		Term.top++;
-		Term.s[Term.top] = Ready.s[Ready.top];
+        // add to Ready queue all processes that arrive at the same time
+        while (j < n && curr_arr_time == New.s[j].arr)
+        {
+            // append(Ready, New.s[j])
+            Ready.top++;
+            Ready.s[Ready.top] = New.s[j];
 
-		// pop 
-		Ready.s[Ready.top] = Done_Process;
-		Ready.top--;
+            New.top--; // pop
+            j++;
+        }
 
-		// add to Ready queue the processes that arrive during the previous process running
-		while(j<n && New.s[j].arr < Term.s[Term.top].fin)
-		{
-			// append(Ready, New.s[j])
-			Ready.top++;
-			Ready.s[Ready.top] = New.s[j];
-			j++;
-		}
-	}
+        // sorting current Ready by burst time with quick sort algo
+        qsort((void *)Ready.s, Ready.top + 1, sizeof(Process), comp_burst);
+        
+        // calculating
+        if (Term.top == -1)
+        {
+            Ready.s[Ready.top].start = Ready.s[Ready.top].arr;
+        }
+        else
+        {
+            if (Ready.s[Ready.top].arr <= Term.s[Term.top].fin)
+            {
+                Ready.s[Ready.top].start = Term.s[Term.top].fin;
+            }
+            else
+            {
+                Ready.s[Ready.top].start = Ready.s[Ready.top].arr;
+            }
+        }
+        Ready.s[Ready.top].fin = Ready.s[Ready.top].start + Ready.s[Ready.top].bur;
+        Ready.s[Ready.top].tat = Ready.s[Ready.top].fin - Ready.s[Ready.top].arr;
+        Ready.s[Ready.top].wt = Ready.s[Ready.top].tat - Ready.s[Ready.top].bur;
+        Ready.s[Ready.top].rt = Ready.s[Ready.top].wt;
 
-	// print results
-	printf("\nPName \tArrtime \tBurtime Start \tTAT \tFinish\n");
-	for(i = 0; i < n; i++)
-	{
-		printf("%d\t%6d\t\t%6d\t%6d\t%6d\t%6d\n", Term.s[i].pn, Term.s[i].arr,
-				Term.s[i].bur, Term.s[i].start, Term.s[i].tat, Term.s[i].fin);
-		totwt += Term.s[i].wt;
-		tottat += Term.s[i].tat;
-	}
+        // append to Term queue
+        Term.top++;
+        Term.s[Term.top] = Ready.s[Ready.top];
 
-	printf("Average waiting time = %.2f\n", (float)totwt/n);
-	printf("Average turnaround = %.2f\n", (float)tottat/n);
-	
+        // pop
+        Ready.s[Ready.top].bur = 0;
+        Ready.top--;
+
+        // add to Ready queue the processes that arrive during the previous process running
+        while (j < n && New.s[j].arr <= Term.s[Term.top].fin)
+        {
+            // append(Ready, New.s[j])
+            Ready.top++;
+            Ready.s[Ready.top] = New.s[j];
+            New.top--;
+            j++;
+        }
+    }
+
+    // print results
+    printf("\nPName \tArrtime \tBurtime Start \tTAT \tFinish\n");
+    for (i = 0; i < n; i++)
+    {
+        printf("%d\t%6d\t\t%6d\t%6d\t%6d\t%6d\n", Term.s[i].pn, Term.s[i].arr,
+               Term.s[i].bur, Term.s[i].start, Term.s[i].tat, Term.s[i].fin);
+        totwt += Term.s[i].wt;
+        tottat += Term.s[i].tat;
+    }
+
+    printf("Average waiting time = %.2f\n", (float)totwt / n);
+    printf("Average turnaround = %.2f\n", (float)tottat / n);
 }
 
-
-// compare arrival time
+// compare arrival time desc -> stablized
 int comp_arrival(const void *p, const void *q)
 {
-	Process *a = (Process*)p;
-	Process *b = (Process*)q;
+    Process *a = (Process *)p;
+    Process *b = (Process *)q;
 
-	if (a->arr < b->arr)
-		return -1;
-	else if (a->arr > b->arr)
-		return 1;
-	else 
-		return 0;
+    int arr = a->arr - b->arr;
+    return arr != 0 ?  arr : b->order - a->order;
 }
 
-// compare burst time
+// compare burst time asc -> stablized 
 int comp_burst(const void *p, const void *q)
 {
-	Process *a = (Process*)p;
-	Process *b = (Process*)q;
-	
-	if (a->bur < b->bur)
-		return 1;
-	else if (a->bur > b->bur)
-		return -1;
-	else 
-		return 0;
+    Process *a = (Process *)p;
+    Process *b = (Process *)q;
+
+    int bur = b->bur - a->bur;
+    return bur != 0 ? bur : b->order - a->order;
 }
